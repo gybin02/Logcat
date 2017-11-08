@@ -193,7 +193,7 @@ public class HighLighting {
     private static String renderContent(String input) {
         String template = "<div class=\"%s\">%s</div>";
 //        String divClass = "v";
-        String result = "";
+        String result = input;
         if (input.contains(TAG_V)) {
             result = String.format(template, "v", input);
         } else if (input.contains(TAG_D)) {
