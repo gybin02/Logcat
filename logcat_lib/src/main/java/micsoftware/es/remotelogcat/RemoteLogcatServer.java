@@ -403,7 +403,8 @@ public class RemoteLogcatServer implements Runnable {
     }
 
     private void processLine(StringBuilder log, String line, int lineNumber) {
-        log.append("<br/>").append(HighLighting.applyHighLighting(line, lineNumber));
+        log.append(HighLighting.applyHighLighting(line, lineNumber));
+//        .append("<br/>")
     }
 
 

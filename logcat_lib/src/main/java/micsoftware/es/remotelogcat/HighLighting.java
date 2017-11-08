@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * 高亮优化
  * Created by miguelangel.perez on 21/10/2017.
  */
 
@@ -24,6 +25,11 @@ public class HighLighting {
     private static final String TAG_JSON_CONTENT_VALUE = "#JSON_CONTENT_VALUE#";
     private static final String TAG_LINE_NUMBER = "#LINE_NUMBER#";
     private static final String TAG_LINE_LABEL = "#LINE_LABEL#";
+    public static final String TAG_V = " V/";
+    public static final String TAG_D = " D/";
+    public static final String TAG_I = " I/";
+    public static final String TAG_W = " W/";
+    public static final String TAG_E = " E/";
 
 
     private static String tagBuffer = "";
@@ -34,54 +40,56 @@ public class HighLighting {
 
         restoreStateBetweenRequests(lineNumber);
 
-        if (inputStr!=null && !inputStr.isEmpty()) {
+        if (inputStr != null && !inputStr.isEmpty()) {
             //Requests
             if (inputStr.contains(TAG_END_REQUEST_RETROFIT)
                     ) {
                 return boldHighLighting(inputStr);
-            }else if(inputStr.contains(TAG_START_REQUEST_RETROFIT)) {
+            } else if (inputStr.contains(TAG_START_REQUEST_RETROFIT)) {
                 return previousJumpHighLighting(boldHighLighting(inputStr));
             }
             //Responses
             else if (inputStr.contains(TAG_END_RESPONSE_RETROFIT)) {
                 return boldHighLighting(inputStr);
-            }else if (inputStr.contains(TAG_START_RESPONSE_RETROFIT)) {
+            } else if (inputStr.contains(TAG_START_RESPONSE_RETROFIT)) {
                 return previousJumpHighLighting(boldHighLighting(inputStr));
             }
             //user request to higtlighting bold
-            else if (inputStr.contains(TAG_REMOTE_LOGCAT_BOLD)){
+            else if (inputStr.contains(TAG_REMOTE_LOGCAT_BOLD)) {
                 return boldHighLighting(inputStr.replace(TAG_REMOTE_LOGCAT_BOLD, ""));
             }
             //JSON HightLighting
-            else if(containsJSONValue(inputStr)){
+            else if (containsJSONValue(inputStr)) {
                 return formatJSONLine(inputStr, lineNumber);
 
-            }else if (tryHeuristicJSONMessageOutbounds(inputStr)){
-                if (jsonBuffer.isEmpty()){
+            } else if (tryHeuristicJSONMessageOutbounds(inputStr)) {
+                if (jsonBuffer.isEmpty()) {
                     tagBuffer = extractLineLabel(inputStr);
-                    jsonBuffer=inputStr.replace(tagBuffer, "");
-                }else{
-                    jsonBuffer+=inputStr.replace(tagBuffer, "");
+                    jsonBuffer = inputStr.replace(tagBuffer, "");
+                } else {
+                    jsonBuffer += inputStr.replace(tagBuffer, "");
                 }
 
                 //Stop contion: json completed
-                if(countMatches(jsonBuffer, "\\{")==countMatches(jsonBuffer, "\\}")){
+                if (countMatches(jsonBuffer, "\\{") == countMatches(jsonBuffer, "\\}")) {
                     String jsonComplete = tagBuffer + jsonBuffer;
-                    jsonBuffer="";
-                    tagBuffer="";
-                    jsonBufferLines=0;
+                    jsonBuffer = "";
+                    tagBuffer = "";
+                    jsonBufferLines = 0;
                     return formatJSONLine(jsonComplete, lineNumber);
                 }
 
                 //Stop condition: avoid infinite buffer
                 jsonBufferLines++;
-                if (jsonBufferLines >= MAX_LINES_JSON_BUFFER_HEURISTICS){
-                    jsonBuffer="";
-                    tagBuffer="";
-                    jsonBufferLines=0;
+                if (jsonBufferLines >= MAX_LINES_JSON_BUFFER_HEURISTICS) {
+                    jsonBuffer = "";
+                    tagBuffer = "";
+                    jsonBufferLines = 0;
                     return jsonBuffer;
                 }
                 return "";
+            }else{
+                return renderContent(inputStr);
             }
         }
         return inputStr;
@@ -96,7 +104,7 @@ public class HighLighting {
                     .replace(TAG_LINE_NUMBER, String.valueOf(lineNumber))
                     .replace(TAG_LINE_LABEL, extractLineLabel(inputStr))
                     .replace(TAG_JSON_CONTENT_VALUE, extractJSONValue(inputStr));
-        }else{
+        } else {
             return inputStr;
         }
     }
@@ -106,12 +114,12 @@ public class HighLighting {
         return inputStr.substring(0, inputStr.indexOf("{"));
     }
 
-    private static String extractJSONValue(String inputString){
+    private static String extractJSONValue(String inputString) {
         return inputString.substring(inputString.indexOf("{"), inputString.length());
     }
 
     private static boolean containsJSONValue(String inputStr) {
-        if (inputStr!=null && !inputStr.isEmpty() && inputStr.contains("{") && inputStr.endsWith("}") && countMatches(inputStr, "\\{")==countMatches(inputStr, "\\}")){
+        if (inputStr != null && !inputStr.isEmpty() && inputStr.contains("{") && inputStr.endsWith("}") && countMatches(inputStr, "\\{") == countMatches(inputStr, "\\}")) {
             return isJSONValid(extractJSONValue(inputStr));  //parse & validate object
         }
         return false;
@@ -120,7 +128,7 @@ public class HighLighting {
     private static boolean isJSONValid(String test) {
         try {
             JSONObject object = new JSONObject(test);
-            if (object.length()>0) return true;
+            if (object.length() > 0) return true;
             return false;
         } catch (JSONException ex) {
             try {
@@ -132,8 +140,9 @@ public class HighLighting {
         return true;
     }
 
-    private static int countMatches(String inputStr, String strRegExToMatch){
-        return (inputStr!=null && inputStr.length()>0 && strRegExToMatch!=null && strRegExToMatch.length()>0)
+    private static int countMatches(String inputStr, String strRegExToMatch) {
+        return (inputStr != null && inputStr.length() > 0 && strRegExToMatch != null && strRegExToMatch
+                .length() > 0)
                 ? inputStr.length() - inputStr.replaceAll(strRegExToMatch, "").length()
                 : 0;
     }
@@ -145,12 +154,13 @@ public class HighLighting {
 
     /**
      * Heuristics: Sometimes, a large response exceeds max weigth for the Android Logcat line. This method check if mixing several lines, is possiblo to create a valid JSON response
+     *
      * @param inputStr current line
      * @return it decides if this line can mix with others to create a unique valid response.
      */
     private static boolean tryHeuristicJSONMessageOutbounds(String inputStr) {
-        if (inputStr!=null && !inputStr.isEmpty() && inputStr.contains("{") &&inputStr.contains("}")
-                && (countMatches(inputStr, "\\{")>2 || countMatches(inputStr, "\\}")>2)  //hight chance that several lines have been used (multiline json)
+        if (inputStr != null && !inputStr.isEmpty() && inputStr.contains("{") && inputStr.contains("}")
+                && (countMatches(inputStr, "\\{") > 2 || countMatches(inputStr, "\\}") > 2)  //hight chance that several lines have been used (multiline json)
                 && countMatches(inputStr, "\\{") != countMatches(inputStr, "\\}")) {
             return true;
         }
@@ -159,7 +169,7 @@ public class HighLighting {
 
     /*Avoid mixing heuristics state between several requests reseting static vars*/
     private static void restoreStateBetweenRequests(int lineNumber) {
-        if (lineNumber == 0){
+        if (lineNumber == 0) {
             tagBuffer = "";
             jsonBuffer = "";
             jsonBufferLines = 0;
@@ -168,15 +178,33 @@ public class HighLighting {
     //end region
 
 
-    public static String boldHighLighting(String inputStr){
+    public static String boldHighLighting(String inputStr) {
         return "<b>" + inputStr + "</b>";
     }
 
-    public static String previousJumpHighLighting(String inputStr){
+    public static String previousJumpHighLighting(String inputStr) {
         return "<br/>" + inputStr;
     }
 
-    public static String postJumpHighLighting(String inputStr){
+    public static String postJumpHighLighting(String inputStr) {
         return inputStr + "<br/>";
+    }
+
+    private static String renderContent(String input) {
+        String template = "<div class=\"%s\">%s</div>";
+//        String divClass = "v";
+        String result = "";
+        if (input.contains(TAG_V)) {
+            result = String.format(template, "v", input);
+        } else if (input.contains(TAG_D)) {
+            result = String.format(template, "d", input);
+        } else if (input.contains(TAG_I)) {
+            result = String.format(template, "i", input);
+        } else if (input.contains(TAG_W)) {
+            result = String.format(template, "w", input);
+        } else if (input.contains(TAG_E)) {
+            result = String.format(template, "e", input);
+        }
+        return result;
     }
 }
