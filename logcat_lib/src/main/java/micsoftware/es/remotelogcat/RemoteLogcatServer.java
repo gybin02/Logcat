@@ -51,10 +51,14 @@ public class RemoteLogcatServer implements Runnable {
     private static final String APP_NAME = "#APP_NAME#";
     private static final String LOGCAT_CONTENT_TAG = "#LOGCAT_CONTENT_TAG#";
     private static final String CLEAR_LOG_TAG = "CLEANED_";
-    private static final String GENERIC_TAG= "#TAG#";
+    private static final String GENERIC_TAG = "#TAG#";
     private static final String UTF8Encoding = "UTF-8";
 
-    enum FilterTypes {TAG_FILTER_START, TAG_FILTER_CONTAINS, NO_FILTER;}
+    enum FilterTypes {
+        TAG_FILTER_START,
+        TAG_FILTER_CONTAINS,
+        NO_FILTER;
+    }
 
     // Filter constant strings
     private static final String TAG_FILTER_START = "?filterStart=";
@@ -74,14 +78,26 @@ public class RemoteLogcatServer implements Runnable {
     public RemoteLogcatServer(int port, int millisecondsToReloading, Context context) {
         mPort = port;
 
-        if (context!=null && context.getApplicationInfo()!=null && context.getApplicationInfo().loadLabel(context.getPackageManager())!=null ) {
+        if (context != null && context.getApplicationInfo() != null && context.getApplicationInfo()
+                                                                              .loadLabel(context.getPackageManager()) != null) {
             configHTMLFiles(context, millisecondsToReloading);
             showIPAddressMessage(context);
         }
     }
 
-    private String getHTMLPage(Context context, int rawResourceId) {
-        return readTextFile(context.getResources().openRawResource(rawResourceId));
+    /**
+     * 读取HTML
+     * @param context
+     * @param rawResourceId
+     * @return
+     */
+    private String getHTMLPage(Context context, String rawResourceId) {
+        try {
+            return readTextFile(context.getAssets().open(rawResourceId));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     public String readTextFile(InputStream inputStream) {
@@ -103,7 +119,7 @@ public class RemoteLogcatServer implements Runnable {
 
     private void showIPAddressMessage(final Context context) {
         final String ipAddress = NetworkUtils.getDeviceIpAddress(context);
-        if (ipAddress!=null && !ipAddress.isEmpty()){
+        if (ipAddress != null && !ipAddress.isEmpty()) {
 
             //Open WebBrowser intent
             String url = "http://localhost:" + getPort();
@@ -121,14 +137,15 @@ public class RemoteLogcatServer implements Runnable {
 
             //Build notification
             NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSmallIcon(android.R.drawable.sym_def_app_icon)
-                        .setContentTitle(context.getString(R.string.title_notification))
-                        .setContentText( context.getString(R.string.notification_message) + ipAddress + ":" + getPort() )
-                        .setContentIntent( resultPendingIntent );
+                    new NotificationCompat.Builder(context)
+                            .setSmallIcon(android.R.drawable.sym_def_app_icon)
+                            .setContentTitle(context.getString(R.string.title_notification))
+                            .setContentText(context.getString(R.string.notification_message) + ipAddress + ":" + getPort())
+                            .setContentIntent(resultPendingIntent);
 
             //Send notification
-            ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(1, mBuilder.build());
+            ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).notify(1, mBuilder
+                    .build());
 
         }
     }
@@ -136,11 +153,13 @@ public class RemoteLogcatServer implements Runnable {
     private void configHTMLFiles(Context context, int milliseconds) {
 
         //App Name
-        String strAppName = context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
+        String strAppName = context.getApplicationInfo()
+                                   .loadLabel(context.getPackageManager())
+                                   .toString();
 
         //Getting HTML Files: From raw resources
-        HTML_PAGE_WELCOME = getHTMLPage(context, R.raw.welcome);
-        HTML_PAGE_LOGCAT_BASE_CONTENT = getHTMLPage(context, R.raw.logcatcontent);
+        HTML_PAGE_WELCOME = getHTMLPage(context, "welcome.html");
+        HTML_PAGE_LOGCAT_BASE_CONTENT = getHTMLPage(context, "logcatcontent.html");
 
         //Formatting HTML Files
         HTML_PAGE_WELCOME = HTML_PAGE_WELCOME.replace(APP_NAME, strAppName);
@@ -210,7 +229,7 @@ public class RemoteLogcatServer implements Runnable {
                     query = getQueryString(line);
                     break;
                 }
-                if (line.startsWith("POST /log")){
+                if (line.startsWith("POST /log")) {
                     //HACK: All POST queries clean Logcat
                     query = getQueryString(line);
                     forcePreviousCleaning = true;
@@ -254,7 +273,7 @@ public class RemoteLogcatServer implements Runnable {
         query = line.substring(start, end);
         try {
             return URLDecoder.decode(query, UTF8Encoding).trim();
-        }catch (Exception e){
+        } catch (Exception e) {
             return query;
         }
 
@@ -275,7 +294,7 @@ public class RemoteLogcatServer implements Runnable {
      */
     private void createUnknownRequestResponse(PrintStream output) {
 
-        byte[] bytes= null;
+        byte[] bytes = null;
         try {
             bytes = readBadRequestContent();
         } catch (IOException e) {
@@ -284,7 +303,7 @@ public class RemoteLogcatServer implements Runnable {
 
         output.println("HTTP/1.0 400 Bad Request");
         output.println("Content-Type: text/html");
-        if (bytes!=null) {
+        if (bytes != null) {
             output.println("Content-Length: " + bytes.length);
             output.println();
             try {
@@ -304,32 +323,36 @@ public class RemoteLogcatServer implements Runnable {
 
         try {
 
-            Pair<FilterTypes,String> filter = getFilter(route);
+            Pair<FilterTypes, String> filter = getFilter(route);
             String BASE_HTML_CONTENT = "";
-            if (filter.first.equals(FilterTypes.NO_FILTER)){
+            if (filter.first.equals(FilterTypes.NO_FILTER)) {
                 BASE_HTML_CONTENT = HTML_PAGE_LOGCAT_BASE_CONTENT
                         .replace(FILTERED_STRING, "");
-            }else{
+            } else {
                 BASE_HTML_CONTENT = HTML_PAGE_LOGCAT_BASE_CONTENT
                         .replace(FILTERED_STRING, filtered_string_base.replace(GENERIC_TAG, filter.second));
             }
 
-            if(previousCleaning) {
-                if( //Only for Rooted devices => result=0
-                    Runtime.getRuntime().exec("logcat -c").waitFor()!=0
-                    ){
+            if (previousCleaning) {
+                if ( //Only for Rooted devices => result=0
+                        Runtime.getRuntime().exec("logcat -c").waitFor() != 0
+                        ) {
 
                     //Workaround: Your device is no rooted
-                    Log.d("CLEAN_LOG_FLAG", CLEAR_LOG_TAG + String.valueOf(Calendar.getInstance().getTimeInMillis()));
-                    lastCleanFlag = CLEAR_LOG_TAG + String.valueOf(Calendar.getInstance().getTimeInMillis());
-                };
+                    Log.d("CLEAN_LOG_FLAG", CLEAR_LOG_TAG + String.valueOf(Calendar.getInstance()
+                                                                                   .getTimeInMillis()));
+                    lastCleanFlag = CLEAR_LOG_TAG + String.valueOf(Calendar.getInstance()
+                                                                           .getTimeInMillis());
+                }
+                ;
             }
 
-            Process process = Runtime.getRuntime().exec("logcat -d -v time"); //forceing the "tag" mode, otherwise, mode depends from device
+            Process process = Runtime.getRuntime()
+                                     .exec("logcat -d -v time"); //forceing the "tag" mode, otherwise, mode depends from device
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
 
-            StringBuilder log=new StringBuilder();
+            StringBuilder log = new StringBuilder();
             String line = "";
             boolean cleanFlagReached = false;
 
@@ -338,21 +361,21 @@ public class RemoteLogcatServer implements Runnable {
             while ((line = bufferedReader.readLine()) != null) {
 
                 // To filter last clean
-                if (!lastCleanFlag.equals("") && line.contains(lastCleanFlag)){
-                    cleanFlagReached=true;
+                if (!lastCleanFlag.equals("") && line.contains(lastCleanFlag)) {
+                    cleanFlagReached = true;
                     continue;
-                }else if (!lastCleanFlag.equals("") && !cleanFlagReached){
+                } else if (!lastCleanFlag.equals("") && !cleanFlagReached) {
                     continue;
                 }
 
                 switch (filter.first) {
                     case TAG_FILTER_START:
-                        if (line.startsWith(filter.second)){
+                        if (line.startsWith(filter.second)) {
                             processLine(log, line, lineNumber);
                         }
                         break;
                     case TAG_FILTER_CONTAINS:
-                        if (line.contains(filter.second)){
+                        if (line.contains(filter.second)) {
                             processLine(log, line, lineNumber);
                         }
                         break;
@@ -417,13 +440,13 @@ public class RemoteLogcatServer implements Runnable {
 
     private Pair<FilterTypes, String> getFilter(String route) {
 
-        if (route.contains(TAG_FILTER_START)){
-            return new Pair<>(FilterTypes.TAG_FILTER_START, route.replace(TAG_FILTER_START,""));
+        if (route.contains(TAG_FILTER_START)) {
+            return new Pair<>(FilterTypes.TAG_FILTER_START, route.replace(TAG_FILTER_START, ""));
 
-        }else if (route.contains(TAG_FILTER_CONTAINS)){
+        } else if (route.contains(TAG_FILTER_CONTAINS)) {
             return new Pair<>(FilterTypes.TAG_FILTER_CONTAINS, route.replace(TAG_FILTER_CONTAINS, ""));
         }
-        return new Pair<>(FilterTypes.NO_FILTER,"");
+        return new Pair<>(FilterTypes.NO_FILTER, "");
     }
 
 
