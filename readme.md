@@ -1,5 +1,5 @@
 ## LogCat
-![logcat.jpg](/image/logcat.jpg)
+![logcat.jpg](/img/logcat.jpg)
 一个在APP内建立Socket服务器提供数据，同时在浏览器上直接查看安卓 LogCat的工具库；不需要USB连接手机，就可查看Log。 方便QA，不用安装 Android Studio 就能查看LOG;
 
 ### 如何使用?
@@ -37,7 +37,8 @@
         # 把PC端8000端口的数据, 转发到Android端的9000端口上.
         #   adb forward tcp:8000 tcp:9000
     ```
-    
+### 截图
+![screen](/img/screencapture.png)  
     
 ### 功能
   1. 使用浏览器查看LogCat
