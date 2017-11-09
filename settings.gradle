@@ -1,1 +1,1 @@
-include ':app', ':logcat_lib'
+include ':app', ':logcat_lib', ':lib-noop'
