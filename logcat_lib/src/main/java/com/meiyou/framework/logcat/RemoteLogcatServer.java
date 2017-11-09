@@ -178,7 +178,7 @@ public class RemoteLogcatServer implements Runnable {
                                    .toString();
 
         //Getting HTML Files: From raw resources
-        HTML_PAGE_WELCOME = getHTMLPage(context, "welcome.html");
+        HTML_PAGE_WELCOME = getHTMLPage(context, "error.html");
         HTML_PAGE_LOGCAT_BASE_CONTENT = getHTMLPage(context, "logcatcontent.html");
 
         //Formatting HTML Files
@@ -250,7 +250,8 @@ public class RemoteLogcatServer implements Runnable {
 //            while 
             if (!TextUtils.isEmpty(line = reader.readLine())) {
                 //supported API requests
-                if (line.startsWith("GET /log")) {
+                //首页
+                if (line.startsWith("GET /log")||line.startsWith("GET / HTTP")) {
                     query = getQueryString(line);
 //                    break;
                 }
