@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -12,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.meiyou.framework.logcat.remotelogcat.R;
+import com.meiyou.framework.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -44,6 +46,8 @@ public class RemoteLogcatServer implements Runnable {
     private static final String CLEAR_LOG_TAG = "CLEANED_";
     private static final String GENERIC_TAG = "#TAG#";
     private static final String UTF8Encoding = "UTF-8";
+    private final Context context;
+    private AssetManager mAssets;
 
     enum FilterTypes {
         TAG_FILTER_START,
@@ -75,7 +79,8 @@ public class RemoteLogcatServer implements Runnable {
      */
     public RemoteLogcatServer(int port, int millisecondsToReloading, Context context) {
         mPort = port;
-
+        mAssets = context.getResources().getAssets();
+        this.context = context;
         if (context != null && context.getApplicationInfo() != null && context.getApplicationInfo()
                                                                               .loadLabel(context.getPackageManager()) != null) {
             configHTMLFiles(context, millisecondsToReloading);
@@ -246,12 +251,13 @@ public class RemoteLogcatServer implements Runnable {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String line;
             Boolean forcePreviousCleaning = false;
+            String route = null;
 
 //            while 
             if (!TextUtils.isEmpty(line = reader.readLine())) {
                 //supported API requests
                 //首页
-                if (line.startsWith("GET /log")||line.startsWith("GET / HTTP")) {
+                if (line.startsWith("GET /log") || line.startsWith("GET / HTTP")) {
                     query = getQueryString(line);
 //                    break;
                 }
@@ -261,20 +267,27 @@ public class RemoteLogcatServer implements Runnable {
                     forcePreviousCleaning = true;
 //                    break;
                 }
+
+                if (line.startsWith("GET /")) {
+                    int start = line.indexOf('/') + 1;
+                    int end = line.indexOf(' ', start);
+                    route = line.substring(start, end);
+                }
             }
+
 
             // Output stream that we send the response to
             output = new PrintStream(socket.getOutputStream());
 
             // cath the query.
             if (null == query) {
-                createUnknownRequestResponse(output);
+                createUnknownRequestResponse(route, output);
                 return;
             }
             byte[] bytes = readLogcatContent(query, forcePreviousCleaning);
             if (null == bytes) {
                 //we dont understand this request
-                createUnknownRequestResponse(output);
+                createUnknownRequestResponse("/error",output);
                 return;
             }
 
@@ -293,9 +306,10 @@ public class RemoteLogcatServer implements Runnable {
 
     @NonNull
     private String getQueryString(String line) {
-        String query;
+        String query = "";
         int start = line.indexOf('/') + 4;
         int end = line.indexOf(' ', start);
+        if (end == -1) return query;
         query = line.substring(start, end);
         try {
             return URLDecoder.decode(query, UTF8Encoding).trim();
@@ -318,17 +332,22 @@ public class RemoteLogcatServer implements Runnable {
     /**
      * Send welcome page when an unknown request has been made
      */
-    private void createUnknownRequestResponse(PrintStream output) {
+    private void createUnknownRequestResponse(String route, PrintStream output) {
 
         byte[] bytes = null;
         try {
-            bytes = readBadRequestContent();
+            bytes = Utils.loadContent(route, mAssets);
+            if (bytes == null) {
+                bytes = readBadRequestContent();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        output.println("HTTP/1.0 400 Bad Request");
-        output.println("Content-Type: text/html");
+//        output.println("HTTP/1.0 400 Bad Request");
+        output.println("HTTP/1.0 200 OK");
+        output.println("Content-Type: " + Utils.detectMimeType(route));
+//        output.println("Content-Type: text/html");
         if (bytes != null) {
             output.println("Content-Length: " + bytes.length);
             output.println();

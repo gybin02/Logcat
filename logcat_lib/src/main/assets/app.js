@@ -3,6 +3,7 @@ var isTimerRunning = true;
 var currentScroll = 0;
 var currentScrollTAG = "currentScroll";
 var lastPositionTag = "lastPos";
+var MILLISECONDS_TO_RELOADING =5000;
 
 function reloadFunction() {
     document.cookie = currentScrollTAG + "=" + document.body.scrollTop;
@@ -36,7 +37,7 @@ function startTemp() {
         }
         window.scrollTo(0, currentScroll);
     }
-    myTimer = window.setTimeout(reloadFunction, #MILLISECONDS_TO_RELOADING#);
+    myTimer = window.setTimeout(reloadFunction, MILLISECONDS_TO_RELOADING);
 }
 
 function getCookie(cname) {
