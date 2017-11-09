@@ -30,6 +30,15 @@
              logcatServer.startServer();
  ```
  3. 使用浏览器访问： http://192.168.0.128:8080
+ 4. 模拟器使用： 
+ 
+    ```
+        adb forward tcp:8080 tcp:8080
+        # 把PC端8000端口的数据, 转发到Android端的9000端口上.
+        #   adb forward tcp:8000 tcp:9000
+    ```
+    
+    
 ### 功能
   1. 使用浏览器查看LogCat
   2. 支持Tag过滤；
