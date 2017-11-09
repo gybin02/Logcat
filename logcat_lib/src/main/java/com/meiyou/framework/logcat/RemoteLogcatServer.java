@@ -29,8 +29,9 @@ import java.util.Calendar;
 
 /**
  * 日志服务器
+ *
  * @author zhengxiaobin@xiaoyouzi.com
- * @since  17/11/8 下午5:50
+ * @since 17/11/8 下午5:50
  */
 public class RemoteLogcatServer implements Runnable {
 
@@ -65,18 +66,26 @@ public class RemoteLogcatServer implements Runnable {
     private boolean mIsRunning;
     private ServerSocket mServerSocket;
 
+    /**
+     * 创建服务器
+     *
+     * @param port                     //port to open connection      服务器端口
+     * @param millisecondsToReloading， 自动刷新页面时间 //page reload rate (ms)
+     * @param context
+     */
     public RemoteLogcatServer(int port, int millisecondsToReloading, Context context) {
         mPort = port;
 
         if (context != null && context.getApplicationInfo() != null && context.getApplicationInfo()
                                                                               .loadLabel(context.getPackageManager()) != null) {
             configHTMLFiles(context, millisecondsToReloading);
-            showIPAddressMessage(context);
+//            showIPAddressMessage(context);
         }
     }
 
     /**
      * 读取HTML
+     *
      * @param context
      * @param rawResourceId
      * @return
@@ -107,6 +116,27 @@ public class RemoteLogcatServer implements Runnable {
         return outputStream.toString();
     }
 
+    /**
+     * 获取IP地址
+     *
+     * @param context
+     * @return
+     */
+    public String getIP(Context context) {
+        final String ipAddress = NetworkUtils.getDeviceIpAddress(context);
+        //not avaliable
+        String result = "";
+        if (ipAddress != null && !ipAddress.isEmpty()) {
+            result = "http://" + ipAddress + ":" + getPort();
+        }
+        return result;
+    }
+
+    /**
+     * 显示 IP地址在通知栏
+     *
+     * @param context
+     */
     private void showIPAddressMessage(final Context context) {
         final String ipAddress = NetworkUtils.getDeviceIpAddress(context);
         if (ipAddress != null && !ipAddress.isEmpty()) {
@@ -180,6 +210,10 @@ public class RemoteLogcatServer implements Runnable {
         } catch (IOException e) {
             Log.e(REMOTE_LOG_CAT_SERVER_TAG, "Error closing the server socket.", e);
         }
+    }
+
+    public boolean isRunning() {
+        return mIsRunning;
     }
 
     public int getPort() {
