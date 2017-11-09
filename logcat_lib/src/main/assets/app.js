@@ -57,7 +57,7 @@ function getCookie(cname) {
 }
 
 function clearLog() {
-    document.body.innerHTML += '<form id="dynForm" action="' + document.URL + '" method="post"><input type="hidden" name="operation" value="clean"></form>', document.getElementById("dynForm").submit()
+    document.body.innerHTML += '<form id="dynForm" action="" method="post"><input type="hidden" name="operation" value="clean"></form>', document.getElementById("dynForm").submit()
 }
 
 function searchContainsString(){

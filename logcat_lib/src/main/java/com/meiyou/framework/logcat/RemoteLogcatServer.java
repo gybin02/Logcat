@@ -261,7 +261,7 @@ public class RemoteLogcatServer implements Runnable {
                     query = getQueryString(line);
 //                    break;
                 }
-                if (line.startsWith("POST /log")) {
+                if (line.startsWith("POST /")) {
                     //HACK: All POST queries clean Logcat
                     query = getQueryString(line);
                     forcePreviousCleaning = true;
