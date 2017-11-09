@@ -1,6 +1,7 @@
 package com.meiyou.framework;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.meiyou.framework.logcat.RemoteLogcatServer;
 
@@ -27,14 +28,20 @@ public class LogCatHelper {
      *
      * @param context
      */
-    public void startServer(Context context) {
+    public void startServer(@NonNull Context context) {
+        startServer(context, new LogCatConfig());
+    }
+    
+    
+    public void startServer(@NonNull Context context, @NonNull LogCatConfig config) {
         Context applicationContext = context.getApplicationContext();
         logcatServer
                 = new RemoteLogcatServer(
-                8080,
-                5000,
+                config.port,
+                config.millisecondsToReloading,
                 applicationContext
         );
+
         logcatServer.startServer();
     }
 
