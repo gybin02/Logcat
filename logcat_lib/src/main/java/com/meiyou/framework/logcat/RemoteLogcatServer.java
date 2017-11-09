@@ -1,4 +1,4 @@
-package micsoftware.es.remotelogcat;
+package com.meiyou.framework.logcat;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,6 +10,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.meiyou.framework.logcat.remotelogcat.R;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;

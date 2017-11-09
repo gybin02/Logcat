@@ -1,4 +1,4 @@
-package micsoftware.es.remotelogcat;
+package com.meiyou.framework.logcat;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -7,16 +7,12 @@ import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.text.format.Formatter;
 import android.util.Log;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.util.Enumeration;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by miguelangel.perez on 21/10/2017.

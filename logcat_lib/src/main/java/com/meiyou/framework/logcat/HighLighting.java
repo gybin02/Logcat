@@ -1,4 +1,4 @@
-package micsoftware.es.remotelogcat;
+package com.meiyou.framework.logcat;
 
 import android.support.annotation.NonNull;
 

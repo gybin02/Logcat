@@ -1,4 +1,4 @@
-package micsoftware.es.remotelogcat;
+package com.meiyou.framework.logcat.remotelogcat;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import micsoftware.es.remotelogcat.RemoteLogcatServer;
+import com.meiyou.framework.logcat.RemoteLogcatServer;
 
 public class MainActivity extends AppCompatActivity {
 

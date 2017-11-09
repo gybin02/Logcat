@@ -1,4 +1,4 @@
-package micsoftware.es.remotelogcat;
+package com.meiyou.framework.logcat.remotelogcat;
 
 import org.junit.Test;
 
