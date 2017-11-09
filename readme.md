@@ -1,6 +1,6 @@
 ## LogCat
 ![logcat.jpg](/img/logcat.jpg)
-一个在APP内建立Socket服务器提供数据，同时在浏览器上直接查看安卓 LogCat的工具库；不需要USB连接手机，就可查看Log。 方便QA，不用安装 Android Studio 就能查看LOG;
+一个在APP内建立Socket服务器提供数据，同时在浏览器上直接查看安卓 LogCat的工具库；不需要USB连接手机，就可查看Log（安卓有些手机连接电脑特繁琐）。 方便QA，不用安装 Android Studio 就能查看LOG; 错误日志实时查看等；
 
 ### 如何使用?
   1. Gradle 集成
