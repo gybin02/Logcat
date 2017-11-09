@@ -247,17 +247,18 @@ public class RemoteLogcatServer implements Runnable {
             String line;
             Boolean forcePreviousCleaning = false;
 
-            while (!TextUtils.isEmpty(line = reader.readLine())) {
+//            while 
+            if (!TextUtils.isEmpty(line = reader.readLine())) {
                 //supported API requests
                 if (line.startsWith("GET /log")) {
                     query = getQueryString(line);
-                    break;
+//                    break;
                 }
                 if (line.startsWith("POST /log")) {
                     //HACK: All POST queries clean Logcat
                     query = getQueryString(line);
                     forcePreviousCleaning = true;
-                    break;
+//                    break;
                 }
             }
 
