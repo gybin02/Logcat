@@ -4,32 +4,17 @@
 
 ### 如何使用?
   1. Gradle 集成
- ```java
-     repositories {
-         ...
-         flatDir {
-             dirs 'libs' 
-         }
-     }
-     ...
-     dependencies {
-         compile fileTree(include: ['*.jar'], dir: 'libs')
-         ...
-         //RemoteLogcat
-         compile(name: "remotelogcat_v1.1", ext: 'aar')
- }
+ ```groovy
+    debugCompile 'com.meiyou.framework:logcat:1.0.0-SNAPSHOT'
+    releaseCompile 'com.meiyou.framework:logcat-noop:1.0.0-SNAPSHOT'
  ```
  2. 代码开启服务器功能；
  ```java
-             RemoteLogcatServer logcatServer 
-                     = new RemoteLogcatServer(
-                         8080,  //port to open connection
-                         5000,  //page reload rate (ms)
-                         getApplicationContext()
-                      );
-             logcatServer.startServer();
+       LogCatHelper.getInstance().startServer();
+       //获取访问地址
+       //LogCatHelper.getInstance().getIp();
  ```
- 3. 使用浏览器访问： http://192.168.0.128:8080
+ 3. 使用浏览器访问：eg: `http://192.168.0.128:8080`
  4. 模拟器使用： 
  
     ```
