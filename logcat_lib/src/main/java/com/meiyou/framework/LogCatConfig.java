@@ -11,7 +11,7 @@ public class LogCatConfig {
     /**
      * port to open connection      服务器端口
      */
-    public int port = 8080;
+    public int port = 8090;
     /**
      * 自动刷新页面时间 //page reload rate (ms)
      */

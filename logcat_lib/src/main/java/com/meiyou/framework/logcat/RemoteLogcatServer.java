@@ -184,7 +184,7 @@ public class RemoteLogcatServer implements Runnable {
 
         //Getting HTML Files: From raw resources
         HTML_PAGE_WELCOME = getHTMLPage(context, "error.html");
-        HTML_PAGE_LOGCAT_BASE_CONTENT = getHTMLPage(context, "logcatcontent.html");
+        HTML_PAGE_LOGCAT_BASE_CONTENT = getHTMLPage(context, "logcat.html");
 
         //Formatting HTML Files
         HTML_PAGE_WELCOME = HTML_PAGE_WELCOME.replace(APP_NAME, strAppName);
