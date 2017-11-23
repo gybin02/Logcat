@@ -31,11 +31,13 @@
 ### 截图
 ![screen](/img/screencapture.png)  
     
-### 功能
+### 功能TODO
   1. 使用浏览器查看LogCat
   2. 支持Tag过滤；
   3. 支持自动刷新，停止刷新
   4. 支持清除Log.
   5. JSON格式数据 高亮显示
   6. OKHTTP 请求，返回值加样式显示
-  
+### 引用
+- [adb logcat 命令行用法](http://blog.csdn.net/tumuzhuanjia/article/details/39555445)
+- [使用NanoHttpd在Android上实现HttpServer](http://blog.csdn.net/kingroc/article/details/52275741)
