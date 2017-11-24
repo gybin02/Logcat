@@ -1,6 +1,7 @@
 package com.meiyou.framework;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 
@@ -28,12 +29,12 @@ public class LogCatHelper {
      *
      * @param context
      */
-    public void startServer( Context context) {
+    public void startServer(@NonNull Context context) {
         Log.d(TAG, "startServer: ");
     }
 
 
-    public void startServer( Context context,  LogCatConfig config) {
+    public void startServer(@NonNull Context context, @NonNull LogCatConfig config) {
         Log.d(TAG, "startServer: config");
     }
 
