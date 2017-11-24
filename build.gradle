@@ -19,6 +19,16 @@ allprojects {
     repositories {
         google()
         jcenter()
+
+        maven {
+            url deployUrl
+        }
+        maven {
+            url deployReleaseUrl
+        }
+        maven {
+            url thirdpartyUrl
+        }
     }
 }
 

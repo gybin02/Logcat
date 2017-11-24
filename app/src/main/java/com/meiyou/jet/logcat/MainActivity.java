@@ -1,5 +1,6 @@
 package com.meiyou.jet.logcat;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.meiyou.framework.LogCatHelper;
+import com.meiyou.framework.dmp.DmpHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,10 +16,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        
+        
         LogCatHelper logCatHelper = LogCatHelper.getInstance();
         if (BuildConfig.DEBUG) { //avoid execution on release, it is only for testing purpoise
 
-            logCatHelper.startServer(getApplicationContext());
+            Context context = getApplicationContext();
+            logCatHelper.startServer(context);
 //            RemoteLogcatServer logcatServer
 //                    = new RemoteLogcatServer(
 //                    8080,  //port to open connection
@@ -25,6 +31,12 @@ public class MainActivity extends AppCompatActivity {
 //                    getApplicationContext()
 //            );
 //            logcatServer.startServer();
+
+            //初始化DMP
+            DmpHelper.initialize(context);
+            
+            
+
         }
 
         findViewById(R.id.btn_toast).setOnClickListener(new View.OnClickListener() {
@@ -44,7 +56,10 @@ public class MainActivity extends AppCompatActivity {
         
         
         TextView tvShow = findViewById(R.id.tv_show);
-        tvShow.setText(logCatHelper.getServerIp(this));
+        String serverIp = logCatHelper.getServerIp(this);
+        String addressLog = DmpHelper.getAddressLog();
+        String result=serverIp+"\n"+addressLog;
+        tvShow.setText(result);
     }
 
 
