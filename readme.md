@@ -10,25 +10,27 @@
  -  本工具可以实现，实时，不间断在Web browser里打印出LogCat，QA发现app问题，可以马上截图，获取上下文Log，发送给QA。极大节省了QA的时间和极大方便了开发者排查问题。
  
 ### 如何使用?
-  1. Gradle 集成
- ```groovy
+1. Gradle 集成
+
+```groovy
     debugCompile 'com.meiyou.framework:logcat:1.0.0-SNAPSHOT'
     releaseCompile 'com.meiyou.framework:logcat-noop:1.0.0-SNAPSHOT'
- ```
- 2. 代码开启服务器功能；
- ```java
+```
+2. 代码开启服务器功能；
+
+```java
        LogCatHelper.getInstance().startServer();
        //获取访问地址
        //LogCatHelper.getInstance().getIp();
- ```
- 3. 使用浏览器访问：eg: `http://192.168.0.128:8080`； 有接入[Developer小火箭](http://git.meiyou.im/Android/developer)的，可以在调试界面看到访问地址; 同时相应的地址也会在LogCat打印出。
- 
- 4. 模拟器使用： 
+```
+3. 使用浏览器访问：eg: `http://192.168.0.128:8090`； 有接入[Developer小火箭](http://git.meiyou.im/Android/developer)的，可以在调试界面看到访问地址; 同时相应的地址也会在LogCat打印出。
+
+4. 模拟器使用： 
  
     ```
-        adb forward tcp:8080 tcp:8080
+        adb forward tcp:8080 tcp:8090
         # 把PC端8000端口的数据, 转发到Android端的9000端口上.
-        #   adb forward tcp:8000 tcp:9000
+        #   adb forward tcp:8080 tcp:8090
     ```
 ### 截图
 
