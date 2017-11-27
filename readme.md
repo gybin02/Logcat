@@ -14,6 +14,7 @@
 
 ```groovy
     debugCompile 'com.meiyou.framework:logcat:1.0.0-SNAPSHOT'
+    //release 不打包进去
     releaseCompile 'com.meiyou.framework:logcat-noop:1.0.0-SNAPSHOT'
 ```
 2. 代码开启服务器功能；
