@@ -31,7 +31,8 @@
         #   adb forward tcp:8000 tcp:9000
     ```
 ### 截图
-<img src="/Android/LogCat/raw/master/img/screencapture.png"  style="width:800px">
+
+<img src="/img/screencapture.png"  style="width:600px">
     
 ### 功能TODO
   1. 使用浏览器查看LogCat
