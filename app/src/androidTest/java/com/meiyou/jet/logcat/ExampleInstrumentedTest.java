@@ -7,7 +7,9 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -22,5 +24,27 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("com.meiyou.jet.logcat", appContext.getPackageName());
+    }
+
+    @Test
+    public void testSubList() {
+        ArrayList<Model> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            list.add(new Model());
+        }
+
+        int size = list.size();
+        list = new ArrayList<>(list.subList(size - 5, size));
+        int sizeNew = list.size();
+        
+        assertEquals(size,sizeNew);
+    }
+    
+    
+    
+
+
+    class Model {
+        String name = "sdfsdf";
     }
 }
