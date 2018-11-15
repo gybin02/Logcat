@@ -1,1 +1,0 @@
-include ':app', ':logcat_lib', ':lib-noop'
